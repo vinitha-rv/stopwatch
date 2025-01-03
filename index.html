@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0a0a0a;
+     
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .stopwatch {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border: 10px solid #7208ebbb;
+      border-radius: 50%;
+      background: radial-gradient(circle, #111, #000);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.9);
+    }
+
+    .dial {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      height: 90%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(17, 245, 245, 0.2), transparent);
+      z-index: 1;
+    }
+
+    .time-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #1ce6bd;
+      text-shadow: 0px 0px 10px #00ffcc;
+      z-index: 2;
+    }
+
+    .hand {
+      position: absolute;
+      width: 2px;
+      height: 40%;
+      background: #00f7ff;
+      top: 50%;
+      left: 50%;
+      transform-origin: bottom;
+      transform: translate(-50%, -100%) rotate(0deg);
+      transition: transform 0.1s ease-in-out;
+      z-index: 3;
+    }
+
+    .center-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background: #06c29c;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+    }
+
+    .button-container {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .start {
+      background: #07e90f;
+      color: #fff;
+    }
+
+    .start:hover {
+      background: #505550;
+      transform: scale(1.1);
+    }
+
+    .stop {
+      background: #f71606;
+      color: #fff;
+    }
+
+    .stop:hover {
+      background: #6b6362;
+      transform: scale(1.1);
+    }
+
+    .reset {
+      background: #09e7e7;
+      color: #fff;
+    }
+
+    .reset:hover {
+      background: #4e7072;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="stopwatch">
+      <div class="dial"></div>
+      <div class="time-display" id="timeDisplay">00:00:00</div>
+      <div class="hand" id="secondHand"></div>
+      <div class="center-dot"></div>
+    </div>
+    <div class="button-container">
+      <button class="button start" id="startBtn">Start</button>
+      <button class="button stop" id="stopBtn">Stop</button>
+      <button class="button reset" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    let elapsedTime = 0;
+    let intervalId = null;
+    let isRunning = false;
+
+    const timeDisplay = document.getElementById("timeDisplay");
+    const secondHand = document.getElementById("secondHand");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function updateDisplay() {
+      timeDisplay.textContent = formatTime(elapsedTime);
+
+     
+      const totalSeconds = elapsedTime / 1000;
+      const secondRotation = (totalSeconds % 60) * 6; 
+      secondHand.style.transform = `translate(-50%, -100%) rotate(${secondRotation}deg)`;
+    }
+
+    function startStopwatch() {
+      if (!isRunning) {
+        isRunning = true;
+        const startTime = Date.now() - elapsedTime;
+        intervalId = setInterval(() => {
+          elapsedTime = Date.now() - startTime;
+          updateDisplay();
+        }, 1000);
+      }
+    }
+
+    function stopStopwatch() {
+      if (isRunning) {
+        isRunning = false;
+        clearInterval(intervalId);
+      }
+    }
+
+    function resetStopwatch() {
+      stopStopwatch();
+      elapsedTime = 0;
+      updateDisplay();
+    }
+
+    startBtn.addEventListener("click", startStopwatch);
+    stopBtn.addEventListener("click", stopStopwatch);
+    resetBtn.addEventListener("click", resetStopwatch);
+
+    
+    updateDisplay();
+  </script>
+</body>
+</html>
+
